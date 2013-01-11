@@ -2,6 +2,14 @@
     'use strict';
 
     /**
+     * Flag to determin if touch events are supported
+     *
+     * @type {Boolean}
+     * @static
+     */
+    var SUPPORTS_TOUCH = (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
+
+    /**
      * Max tap duration
      *
      * @type {Number}
@@ -23,7 +31,7 @@
      * @type {String}
      * @constant
      */
-    var HELPER_NAMESPACE = '.tap-helper';
+    var HELPER_NAMESPACE = '.__tap-helper';
 
     /**
      * Event name
@@ -32,6 +40,14 @@
      * @constant
      */
     var EVENT = 'tap';
+
+    /**
+     * Unique ID used to generate unique helper namespaces
+     *
+     * @type {Number}
+     * @static
+     */
+    var ID = 0;
 
     /**
      * Event variables to pass
@@ -73,16 +89,15 @@
     };
 
     /**
-     * Tap
+     * Tap Class that will you touch/click events to trigger a tap event
      * @class
      * @name Tap
      *
      * @param {jQuery} $target
-     * @param {String} selector
-     * @param {Object} data
+     * @param {Object} handleObj
      * @constructor
      */
-    function Tap($target, selector, data) {
+    function Tap($target, handleObj) {
 
         /**
          * Target element
@@ -98,7 +113,7 @@
          * @name Tap#selector
          * @type {String}
          */
-        this.selector = selector || '';
+        this.selector = handleObj.selector;
 
         /**
          * Data to pass to event trigger
@@ -106,7 +121,7 @@
          * @name Tap#data
          * @type {Object}
          */
-        this.data = data;
+        this.data = handleObj.data;
 
         /**
          * Has touch moved past threshold?
@@ -115,6 +130,14 @@
          * @type {Boolean}
          */
         this.moved = false;
+
+        /**
+         * Helper events namespace
+         *
+         * @name Tap#namespace
+         * @type {Number}
+         */
+        this.namespace = HELPER_NAMESPACE + (ID++);
 
         /**
          * X position of touch on touchstart
@@ -187,6 +210,14 @@
              */
             this.onTouchCancel = this._onTouchCancel.bind(this);
 
+            /**
+             * _onClick handler
+             *
+             * @name Tap#onClick
+             * @type {Function}
+             */
+            this.onClick = this._onClick.bind(this);
+
             return this;
         },
 
@@ -196,7 +227,11 @@
          * @return {Tap}
          */
         enable: function() {
-            this.$target.on('touchstart' + HELPER_NAMESPACE, this.selector, this.onTouchStart);
+            if (SUPPORTS_TOUCH) {
+                this.$target.on('touchstart' + this.namespace, this.selector, this.onTouchStart);
+            } else {
+                this.$target.on('click' + this.namespace, this.selector, this.onClick);
+            }
             return this;
         },
 
@@ -206,7 +241,11 @@
          * @return {Tap}
          */
         disable: function() {
-            this.$target.off('touchstart' + HELPER_NAMESPACE, this.selector, this.onTouchStart);
+            if (SUPPORTS_TOUCH) {
+                this.$target.off('touchstart' + this.namespace, this.selector, this.onTouchStart);
+            } else {
+                this.$target.off('click' + this.namespace, this.selector, this.onClick);
+            }
             return this;
         },
 
@@ -223,6 +262,16 @@
             this.startTime = 0;
 
             return this;
+        },
+
+        /**
+         * Destroy Tap object
+         *
+         * @return {Tap}
+         */
+        destroy: function() {
+            this.onTouchCancel();
+            return this.disable();
         },
 
         /**
@@ -247,9 +296,9 @@
             this.startTime = Date.now();
 
             this.$target
-                .on('touchmove' + HELPER_NAMESPACE, this.selector, this.onTouchMove)
-                .on('touchend' + HELPER_NAMESPACE, this.selector, this.onTouchEnd)
-                .on('touchcancel' + HELPER_NAMESPACE, this.selector, this.onTouchCancel);
+                .on('touchmove' + this.namespace, this.selector, this.onTouchMove)
+                .on('touchend' + this.namespace, this.selector, this.onTouchEnd)
+                .on('touchcancel' + this.namespace, this.selector, this.onTouchCancel);
         },
 
         /**
@@ -277,13 +326,16 @@
         _onTouchEnd: function (e) {
             var tag = e.target.tagName;
 
-            //only preventDefault on elements that are not form inputs
-            if (tag !== 'SELECT' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
-                e.preventDefault();
-            }
+            if (!e.originalEvent.firstTap && !this.moved && Date.now() - this.startTime < MAX_DURATION) {
+                //only preventDefault on elements that are not form inputs
+                if (tag !== 'SELECT' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+                    e.preventDefault();
+                }
 
-            if (!this.moved && Date.now() - this.startTime < MAX_DURATION) {
-                this.$element.trigger(_createTapEvent(e, this.data));
+                // Make sure any parents also emulating a tap event do not also fire tap.
+                // Triggering the event below will bubble the event anyway.
+                e.originalEvent.firstTap = true;
+                this.$target.trigger(_createTapEvent(e, this.data));
             }
 
             this.onTouchCancel();
@@ -297,9 +349,23 @@
             this
                 .reset()
                 .$target
-                .off('touchmove' + HELPER_NAMESPACE, this.selector, this.onTouchMove)
-                .off('touchend' + HELPER_NAMESPACE, this.selector, this.onTouchEnd)
-                .off('touchcancel' + HELPER_NAMESPACE, this.selector, this.onTouchCancel);
+                .off('touchmove' + this.namespace, this.selector, this.onTouchMove)
+                .off('touchend' + this.namespace, this.selector, this.onTouchEnd)
+                .off('touchcancel' + this.namespace, this.selector, this.onTouchCancel);
+        },
+
+        /**
+         * Trigger handler onclick
+         * @private
+         */
+        _onClick: function(e) {
+            if (!e.originalEvent.firstTap) {
+                // Make sure any parents also emulating a tap event do not also fire tap.
+                // Triggering the event below will bubble the event anyway.
+                e.originalEvent.firstTap = true;
+                e.type = 'tap';
+                this.$target.trigger(e);
+            }
         }
     };
 
@@ -316,7 +382,7 @@
          * @param {Object} handleObj
          */
         add: function(handleObj) {
-            new Tap($(this), handleObj.selector, handleObj.data);
+            handleObj.tap = new Tap($(this), handleObj);
         },
 
         /**
@@ -325,10 +391,10 @@
          * @param {Object} handleObj
          */
         remove: function(handleObj) {
-            $(this).off(HELPER_NAMESPACE, handleObj.selector);
+            if (handleObj.tap && handleObj.tap.destroy) {
+                handleObj.tap.destroy();
+            }
         }
     };
-
-    return $;
 
 }(document, jQuery));
