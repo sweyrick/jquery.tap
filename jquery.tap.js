@@ -89,7 +89,7 @@
     };
 
     /**
-     * Tap Class that will you touch/click events to trigger a tap event
+     * Tap Class that will use touch/click events to trigger a tap event
      * @class
      * @name Tap
      *
