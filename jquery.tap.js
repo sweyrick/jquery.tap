@@ -349,10 +349,6 @@
             var tag = e.target.tagName;
 
             if (!e.originalEvent.firstTap && !this.moved && Date.now() - this.startTime < MAX_DURATION) {
-                //only preventDefault on elements that are not form inputs
-                if (tag !== 'SELECT' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
-                    e.preventDefault();
-                }
 
                 // Make sure any parents also emulating a tap event do not also fire tap.
                 // Triggering the event below will bubble the event anyway.
