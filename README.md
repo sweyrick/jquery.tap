@@ -1,5 +1,6 @@
 # jQuery.tap
 
+http://aarongloege.github.com/jquery.tap/
 A jQuery plugin that creates a click alternative for touch enabled browsers.
 
 ## Why?
