@@ -309,8 +309,7 @@
 
             it('will trigger tap on parent element when triggered on child bound to parent', function() {
                 $body.on('tap', _onTap);
-                $touchA
-                    .simulate('click');
+                $touchA.simulate('click');
 
                 expect(taps).to.be(1);
             });
@@ -330,16 +329,14 @@
             it('will trigger tap on click', function() {
                 this.touch = $.support.touch = false;
                 $body.on('tap', touchA, _onTap);
-                $touchA
-                    .simulate('click');
+                $touchA.simulate('click');
 
                 expect(taps).to.be(1);
             });
 
             it('will trigger tap on parent element when triggered on child and bound to parent', function() {
                 $body.on('tap', touchA, _onTap);
-                $touchB
-                    .simulate('click');
+                $touchB.simulate('click');
 
                 expect(taps).to.be(1);
             });
