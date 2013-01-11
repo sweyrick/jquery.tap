@@ -3,12 +3,25 @@
 <head>
     <meta charset="utf-8" />
     <title>Integration Test</title>
+    <!-- Mocha Styles -->
     <link rel="stylesheet" href="assets/css/mocha.css" />
+
+    <!-- jQuery -->
+    <script src="../lib/jquery.min.js"></script>
+    <script src="../jquery.tap.js"></script>
+    <script src="assets/js/jquery.simulate.js"></script>
+
+    <!-- Mocha -->
+    <script src="assets/js/mocha.js"></script>
+    <script src="assets/js/expect.js"></script>
 </head>
 <body>
     <div id="mocha"></div>
-    <script type="text/javascript" src="../lib/jquery.min.js"></script>
-    <script type="text/javascript" src="../jquery.tap.js"></script>
-    <script type="text/javascript" src="assets/js/test.js"></script>
+    <div id="touchA">
+        <div id="touchB"></div>
+    </div>
+
+    <!-- Tests -->
+    <script src="assets/js/test.js"></script>
 </body>
 </html>

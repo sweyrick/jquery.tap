@@ -2,12 +2,12 @@
     'use strict';
 
     /**
-     * Flag to determin if touch events are supported
+     * Flag to determine if touch is supported
      *
      * @type {Boolean}
-     * @static
+     * @constant
      */
-    var SUPPORTS_TOUCH = (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
+    $.support.touch = (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
 
     /**
      * Max tap duration
@@ -39,7 +39,7 @@
      * @type {String}
      * @constant
      */
-    var EVENT = 'tap';
+    var EVENT_NAME = 'tap';
 
     /**
      * Unique ID used to generate unique helper namespaces
@@ -50,7 +50,7 @@
     var ID = 0;
 
     /**
-     * Event variables to pass
+     * Event variables to copy to touches
      *
      * @type {Array}
      * @constant
@@ -77,8 +77,8 @@
         var length = EVENT_VARIABLES.length;
         var touch = e.originalEvent.changedTouches[0];
 
-        var event = $.Event(EVENT, e);
-        event.type = EVENT;
+        var event = $.Event(EVENT_NAME, e);
+        event.type = EVENT_NAME;
         event.data = data;
 
         for (; i < length; i++) {
@@ -163,6 +163,14 @@
          */
         this.startTime = 0;
 
+        /**
+         * Number of touches
+         *
+         * @name Tap#touchStartCount
+         * @type {Number}
+         */
+        this.touchStartCount = 0;
+
         this
             .setupHandlers()
             .reset()
@@ -227,7 +235,7 @@
          * @return {Tap}
          */
         enable: function() {
-            if (SUPPORTS_TOUCH) {
+            if ($.support.touch) {
                 this.$target.on('touchstart' + this.namespace, this.selector, this.onTouchStart);
             } else {
                 this.$target.on('click' + this.namespace, this.selector, this.onClick);
@@ -241,7 +249,7 @@
          * @return {Tap}
          */
         disable: function() {
-            if (SUPPORTS_TOUCH) {
+            if ($.support.touch) {
                 this.$target.off('touchstart' + this.namespace, this.selector, this.onTouchStart);
             } else {
                 this.$target.off('click' + this.namespace, this.selector, this.onClick);
@@ -260,6 +268,7 @@
             this.startX = 0;
             this.startY = 0;
             this.startTime = 0;
+            this.touchStartCount = 0;
 
             return this;
         },
@@ -281,6 +290,11 @@
          * @private
          */
         _onTouchStart: function (e) {
+            this.touchStartCount = e.originalEvent.touches.length;
+
+            if (this.touchStartCount > 1) {
+                return;
+            }
 
             /**
              * Target element
@@ -324,6 +338,14 @@
          * @private
          */
         _onTouchEnd: function (e) {
+            if (!this.touchStartCount || e.originalEvent.touches.length > 0) {
+                return;
+            }
+
+            if (this.touchStartCount > 1) {
+                return;
+            }
+
             var tag = e.target.tagName;
 
             if (!e.originalEvent.firstTap && !this.moved && Date.now() - this.startTime < MAX_DURATION) {
@@ -343,6 +365,7 @@
 
         /**
          * Remove touchmove, touchend, and touchcancel events
+         *
          * @private
          */
         _onTouchCancel: function () {
@@ -355,11 +378,12 @@
         },
 
         /**
-         * Trigger handler onclick
+         * If this is not a manual jQuery.trigger, then trigger the tap event for desktop clicks
+         *
          * @private
          */
         _onClick: function(e) {
-            if (!e.originalEvent.firstTap) {
+            if (!e.isTrigger && !e.originalEvent.firstTap) {
                 // Make sure any parents also emulating a tap event do not also fire tap.
                 // Triggering the event below will bubble the event anyway.
                 e.originalEvent.firstTap = true;
@@ -374,7 +398,7 @@
      *
      * @type {Object}
      */
-    $.event.special[EVENT] = {
+    $.event.special[EVENT_NAME] = {
 
         /**
          * Create new tap object and bind touchstart event
