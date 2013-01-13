@@ -26,11 +26,11 @@
         $touchB.off();
     });
 
-    describe('Manuage Triggers', function() {
+    describe('Manual Triggers', function() {
 
         describe('Direct Callback Bindings', function() {
 
-            it('will trigger tap if tap is manually triggered on same element', function() {
+            it('will trigger tap event if tap is manually triggered on same element', function() {
                 $touchA
                     .on('tap', _onTap)
                     .trigger('tap');
@@ -38,14 +38,14 @@
                 expect(taps).to.be(1);
             });
 
-            it('will trigger tap if tap is manually triggered on child element', function() {
+            it('will trigger tap event if tap is manually triggered on child element', function() {
                 $touchA.on('tap', _onTap);
                 $touchB.trigger('tap');
 
                 expect(taps).to.be(1);
             });
 
-            it('will trigger tap if tap is manually triggered on same element with namespace', function() {
+            it('will trigger namespaced tap event if namespaced tap is manually triggered on same element', function() {
                 $touchA
                     .on('tap.tap1', _onTap)
                     .on('tap.tap2', _onTap)
@@ -54,7 +54,7 @@
                 expect(taps).to.be(1);
             });
 
-            it('will trigger namespaced taps if tap is manually triggered on same element without namespace', function() {
+            it('will trigger namespaced tap event if non-namespaced tap is manually triggered on same element', function() {
                 $touchA
                     .on('tap.tap1', _onTap)
                     .on('tap.tap2', _onTap)
@@ -63,43 +63,47 @@
                 expect(taps).to.be(2);
             });
 
-            it('will not trigger tap if click is manually triggered on same element', function() {
+            it('will not trigger tap event if click is manually triggered on same element', function() {
                 $touchA
-                    .on('tap.tap1', _onTap)
-                    .on('tap.tap2', _onTap)
+                    .on('tap', _onTap)
                     .trigger('click');
 
                 expect(taps).to.be(0);
             });
 
-            it('will not trigger tap if click is manually triggered on child element', function() {
-                $touchA
-                    .on('tap.tap1', _onTap)
-                    .on('tap.tap2', _onTap);
-
+            it('will not trigger tap event if click is manually triggered on child element', function() {
+                $touchA.on('tap', _onTap);
                 $touchB.trigger('click');
 
                 expect(taps).to.be(0);
+            });
+
+            it('will bubble tap event when triggered', function() {
+                $body.on('tap', _onTap);
+                $touchA.on('tap', _onTap);
+                $touchB.trigger('tap');
+
+                expect(taps).to.be(2);
             });
         });
 
         describe('Delegate Callback Bindings', function() {
 
-            it('will trigger tap if tap is manually triggered on same element', function() {
+            it('will trigger tap event if tap is manually triggered on target selector', function() {
                 $body.on('tap', touchA, _onTap);
                 $touchA.trigger('tap');
 
                 expect(taps).to.be(1);
             });
 
-            it('will trigger tap if tap is manually triggered on child element', function() {
+            it('will trigger tap event if tap is manually triggered on child of target selector', function() {
                 $body.on('tap', touchA, _onTap);
                 $touchB.trigger('tap');
 
                 expect(taps).to.be(1);
             });
 
-            it('will trigger tap if tap is manually triggered on same element with namespace', function() {
+            it('will trigger namespaced tap event if namespaced tap is manually triggered on target selector', function() {
                 $body.on('tap.tap1', touchA, _onTap);
                 $body.on('tap.tap2', touchA, _onTap);
                 $touchA.trigger('tap.tap2');
@@ -107,7 +111,7 @@
                 expect(taps).to.be(1);
             });
 
-            it('will trigger namespaced taps if tap is manually triggered on same element without namespace', function() {
+            it('will trigger namespaced taps if non-namespaced tap is manually triggered on target selector', function() {
                 $body.on('tap.tap1', touchA, _onTap);
                 $body.on('tap.tap2', touchA, _onTap);
                 $touchA.trigger('tap');
@@ -115,7 +119,7 @@
                 expect(taps).to.be(2);
             });
 
-            it('will not trigger tap if click is manually triggered on same element', function() {
+            it('will not trigger tap event if click is manually triggered on target selector', function() {
                 $body.on('tap.tap1', touchA, _onTap);
                 $body.on('tap.tap2', touchA, _onTap);
                 $touchA.trigger('click');
@@ -123,12 +127,21 @@
                 expect(taps).to.be(0);
             });
 
-            it('will not trigger tap if click is manually triggered on child element', function() {
+            it('will not trigger tap event if click is manually triggered on child of target selector', function() {
                 $body.on('tap.tap1', touchA, _onTap);
                 $body.on('tap.tap2', touchA, _onTap);
                 $touchB.trigger('click');
 
                 expect(taps).to.be(0);
+            });
+
+            it('will bubble tap event when triggered', function() {
+                $body
+                    .on('tap', touchA, _onTap)
+                    .on('tap', touchB, _onTap);
+                $touchB.trigger('tap');
+
+                expect(taps).to.be(2);
             });
         });
 
@@ -138,7 +151,7 @@
 
         describe('Direct Callback Bindings', function() {
 
-            it('will trigger tap after touchstart, touchmove, and touchend in less than 300ms', function() {
+            it('will trigger tap event after touchstart, touchmove, and touchend are triggered in less than 300ms', function() {
                 this.touch = $.support.touch = true;
                 $touchA
                     .on('tap', _onTap)
@@ -185,7 +198,7 @@
                 }, 200);
             });
 
-            it('will trigger tap on parent element when triggered on child', function() {
+            it('will trigger tap event on parent element when triggered on child', function() {
                 $body.on('tap', _onTap);
                 $touchA
                     .simulate('touchstart')
@@ -195,7 +208,7 @@
                 expect(taps).to.be(1);
             });
 
-            it('will trigger tap 2x on parent element when triggered on child', function() {
+            it('will trigger tap event 2x on parent element when triggered on child', function() {
                 $body.on('tap', _onTap);
                 $touchA
                     .on('tap', _onTap)
@@ -206,7 +219,7 @@
                 expect(taps).to.be(2);
             });
 
-            it('will not trigger if more than one touch occures', function() {
+            it('will not trigger if more than one touch', function() {
                 $body.on('tap', _onTap);
                 $touchA
                     .on('tap', _onTap)
@@ -218,11 +231,21 @@
                 expect(taps).to.be(0);
             });
 
+            it('will bubble tap event after touchstart and touchend', function() {
+                $body.on('tap', _onTap);
+                $touchA.on('tap', _onTap);
+                $touchB
+                    .simulate('touchstart')
+                    .simulate('touchend');
+
+                expect(taps).to.be(2);
+            });
+
         });
 
         describe('Delegate Callback Bindings', function() {
 
-            it('will trigger tap after touchstart, touchmove, and touchend in less than 300ms', function() {
+            it('will trigger tap event after touchstart, touchmove, and touchend in less than 300ms', function() {
                 this.touch = $.support.touch = true;
                 $body.on('tap', touchA, _onTap);
                 $touchA
@@ -269,7 +292,7 @@
                 }, 200);
             });
 
-            it('will trigger tap on parent element when triggered on child', function() {
+            it('will trigger tap event on parent element when triggered on child', function() {
                 $body.on('tap', touchA, _onTap);
                 $touchB
                     .simulate('touchstart')
@@ -279,12 +302,22 @@
                 expect(taps).to.be(1);
             });
 
-            it('will trigger tap 2x on parent element when triggered on child', function() {
+            it('will trigger tap event 2x on parent element when triggered on child', function() {
                 $body.on('tap', touchA, _onTap);
                 $touchB
                     .on('tap', _onTap)
                     .simulate('touchstart')
                     .simulate('touchmove')
+                    .simulate('touchend');
+
+                expect(taps).to.be(2);
+            });
+
+            it('will bubble tap event after touchstart and touchend', function() {
+                $body.on('tap', $touchA, _onTap);
+                $touchA.on('tap',$touchB,  _onTap);
+                $touchB
+                    .simulate('touchstart')
                     .simulate('touchend');
 
                 expect(taps).to.be(2);
@@ -298,7 +331,7 @@
 
         describe('Direct Callback Bindings', function() {
 
-            it('will trigger tap on click', function() {
+            it('will trigger tap event on click', function() {
                 this.touch = $.support.touch = false;
                 $touchA
                     .on('tap', _onTap)
@@ -307,18 +340,17 @@
                 expect(taps).to.be(1);
             });
 
-            it('will trigger tap on parent element when triggered on child bound to parent', function() {
+            it('will trigger tap event on parent element when triggered on child bound to parent', function() {
                 $body.on('tap', _onTap);
                 $touchA.simulate('click');
 
                 expect(taps).to.be(1);
             });
 
-            it('will trigger tap 2x on parent element when triggered on child and bound to both parent and child', function() {
+            it('will bubble tap event after click event', function() {
                 $body.on('tap', _onTap);
-                $touchA
-                    .on('tap', _onTap)
-                    .simulate('click');
+                $touchA.on('tap', _onTap);
+                $touchB.simulate('click');
 
                 expect(taps).to.be(2);
             });
@@ -326,7 +358,7 @@
 
         describe('Delegate Callback Bindings', function() {
 
-            it('will trigger tap on click', function() {
+            it('will trigger tap event on click', function() {
                 this.touch = $.support.touch = false;
                 $body.on('tap', touchA, _onTap);
                 $touchA.simulate('click');
@@ -334,18 +366,17 @@
                 expect(taps).to.be(1);
             });
 
-            it('will trigger tap on parent element when triggered on child and bound to parent', function() {
+            it('will trigger tap event on parent element when triggered on child and bound to parent', function() {
                 $body.on('tap', touchA, _onTap);
                 $touchB.simulate('click');
 
                 expect(taps).to.be(1);
             });
 
-            it('will trigger tap 2x on parent element when triggered on child and bound to both parent and child', function() {
+            it('will bubble tap event after click event', function() {
                 $body.on('tap', touchA, _onTap);
-                $touchB
-                    .on('tap', _onTap)
-                    .simulate('click');
+                $touchA.on('tap', $touchA, _onTap);
+                $touchB.simulate('click');
 
                 expect(taps).to.be(2);
             });
