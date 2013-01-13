@@ -296,14 +296,6 @@
                 return;
             }
 
-            /**
-             * Target element
-             *
-             * @name Tap#$element
-             * @type {HTMLElement}
-             */
-            this.$element = $(e.target);
-
             this.moved = false;
             this.startX = e.originalEvent.touches[0].clientX;
             this.startY = e.originalEvent.touches[0].clientY;
@@ -338,18 +330,15 @@
          * @private
          */
         _onTouchEnd: function (e) {
-            if (!this.touchStartCount || e.originalEvent.touches.length > 0) {
+            if (
+                !this.touchStartCount ||
+                e.originalEvent.touches.length > 0 ||
+                this.touchStartCount > 1
+            ) {
                 return;
             }
-
-            if (this.touchStartCount > 1) {
-                return;
-            }
-
-            var tag = e.target.tagName;
 
             if (!e.originalEvent.firstTap && !this.moved && Date.now() - this.startTime < MAX_DURATION) {
-
                 // Make sure any parents also emulating a tap event do not also fire tap.
                 // Triggering the event below will bubble the event anyway.
                 e.originalEvent.firstTap = true;
@@ -397,7 +386,7 @@
     $.event.special[EVENT_NAME] = {
 
         /**
-         * Create new tap object and bind touchstart event
+         * Create new tap object to handle triggering tap when appropriate
          *
          * @param {Object} handleObj
          */
