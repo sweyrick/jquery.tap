@@ -7,7 +7,7 @@
     <meta name="description" content="jQuery.tap : A jQuery plugin that creates a click alternative for touch enabled browsers" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
+    <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
     <title>jQuery.tap</title>
   </head>
 
@@ -16,14 +16,14 @@
     <!-- HEADER -->
     <div id="header_wrap" class="outer">
         <header class="inner">
-          <a id="forkme_banner" href="https://github.com/aarongloege/jquery.tap">View on GitHub</a>
+          <a id="forkme_banner" target="_blank" href="https://github.com/aarongloege/jquery.tap">View on GitHub</a>
 
           <h1 id="project_title">jQuery.tap</h1>
           <h2 id="project_tagline">A jQuery plugin that creates a click alternative for touch enabled browsers</h2>
 
             <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/aarongloege/jquery.tap/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/aarongloege/jquery.tap/tarball/master">Download this project as a tar.gz file</a>
+              <a class="zip_download_link" target="_blank" href="https://github.com/aarongloege/jquery.tap/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" target="_blank" href="https://github.com/aarongloege/jquery.tap/tarball/master">Download this project as a tar.gz file</a>
             </section>
         </header>
     </div>
@@ -71,22 +71,40 @@
 
 <h2>Tests</h2>
 
-You can view an integration test <a href="test/">here</a> and you can test support for yourself <a href="example/">here</a>.
+You can view an integration test <a target="_blank" href="test/">here</a> and you can test support for yourself <a href="example/">here</a>.
 
 <h2>Licence</h2>
 
-<p>jQuery.tap is licensed under the <a href="http://opensource.org/licenses/mit-license.html">MIT license</a>.</p>
+<p>jQuery.tap is licensed under the <a target="_blank" href="http://opensource.org/licenses/mit-license.html">MIT license</a>.</p>
       </section>
     </div>
 
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
-        <p class="copyright">jQuery.tap maintained by <a href="https://github.com/aarongloege">aarongloege</a></p>
+        <p class="copyright">jQuery.tap maintained by <a target="_blank" href="https://github.com/aarongloege">aarongloege</a></p>
       </footer>
     </div>
 
-    
 
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-37736770-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+        jQuery(document).ready(function($) {
+            $('a').on('click', function() {
+                _gaq.push(['_trackEvent', 'link', this.href]);
+            })
+        });
+
+    </script>
   </body>
 </html>
