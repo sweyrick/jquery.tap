@@ -192,7 +192,7 @@
              * @name Tap#onTouchStart
              * @type {Function}
              */
-            this.onTouchStart = this._onTouchStart.bind(this);
+            this.onTouchStart = $.proxy(this._onTouchStart, this);
 
             /**
              * _onTouchMove handler
@@ -200,7 +200,7 @@
              * @name Tap#onTouchMove
              * @type {Function}
              */
-            this.onTouchMove = this._onTouchMove.bind(this);
+            this.onTouchMove = $.proxy(this._onTouchMove, this);
 
             /**
              * _onTouchEnd handler
@@ -208,7 +208,7 @@
              * @name Tap#onTouchEnd
              * @type {Function}
              */
-            this.onTouchEnd = this._onTouchEnd.bind(this);
+            this.onTouchEnd = $.proxy(this._onTouchEnd, this);
 
             /**
              * _onTouchCancel handler
@@ -216,7 +216,7 @@
              * @name Tap#onTouchCancel
              * @type {Function}
              */
-            this.onTouchCancel = this._onTouchCancel.bind(this);
+            this.onTouchCancel = $.proxy(this._onTouchCancel, this);
 
             /**
              * _onClick handler
@@ -224,7 +224,7 @@
              * @name Tap#onClick
              * @type {Function}
              */
-            this.onClick = this._onClick.bind(this);
+            this.onClick = $.proxy(this._onClick, this);
 
             return this;
         },
@@ -317,7 +317,7 @@
             var x = e.originalEvent.touches[0].clientX;
             var y = e.originalEvent.touches[0].clientY;
 
-            //if finger moves more than 10px flag to cancel
+            //if finger moves more than MAX_MOVE, flag to cancel
             if (Math.abs(x - this.startX) > MAX_MOVE || Math.abs(y - this.startY) > MAX_MOVE) {
                 this.moved = true;
             }
@@ -338,10 +338,10 @@
                 return;
             }
 
-            if (!e.originalEvent.firstTap && !this.moved && Date.now() - this.startTime < MAX_DURATION) {
+            if (!e.originalEvent.triggeredTap && !this.moved && Date.now() - this.startTime < MAX_DURATION) {
                 // Make sure any parents also emulating a tap event do not also fire tap.
-                // Triggering the event below will bubble the event anyway.
-                e.originalEvent.firstTap = true;
+                // Triggering the tap event below will bubble the event anyway.
+                e.originalEvent.triggeredTap = true;
                 this.$target.trigger(_createTapEvent(e, this.data));
             }
 
@@ -368,10 +368,10 @@
          * @private
          */
         _onClick: function(e) {
-            if (!e.isTrigger && !e.originalEvent.firstTap) {
+            if (!e.isTrigger && !e.originalEvent.triggeredTap) {
                 // Make sure any parents also emulating a tap event do not also fire tap.
-                // Triggering the event below will bubble the event anyway.
-                e.originalEvent.firstTap = true;
+                // Triggering the tap event below will bubble the event anyway.
+                e.originalEvent.triggeredTap = true;
                 e.type = 'tap';
                 this.$target.trigger(e);
             }
