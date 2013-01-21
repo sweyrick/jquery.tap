@@ -10,7 +10,7 @@
     $.support.touch = (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
 
     /**
-     * Max tap duration
+     * Max duration between touchstart and touchend
      *
      * @type {Number}
      * @constant
