@@ -1,0 +1,1 @@
+uglifyjs2 jquery.tap.js -c hoist_vars=true -o jquery.tap.min.js -m sort=true -v --stats;
