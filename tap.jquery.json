@@ -1,7 +1,7 @@
 {
     "name": "tap",
     "title": "jQuery Tap",
-    "version": "0.9",
+    "version": "0.9.0",
     "author": {
         "name": "Aaron Gloege",
         "url": "https://github.com/aarongloege/"
