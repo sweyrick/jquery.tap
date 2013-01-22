@@ -314,8 +314,8 @@
             });
 
             it('will bubble tap event after touchstart and touchend', function() {
-                $body.on('tap', $touchA, _onTap);
-                $touchA.on('tap',$touchB,  _onTap);
+                $body.on('tap', touchA, _onTap);
+                $touchA.on('tap',touchB,  _onTap);
                 $touchB
                     .simulate('touchstart')
                     .simulate('touchend');
@@ -385,7 +385,7 @@
             it('will bubble tap event after click event', function() {
                 $body.on('tap', touchB, _onTap);
                 $touchA
-                    .on('tap', $touchB, _onTap)
+                    .on('tap', touchB, _onTap)
                     .on('tap', _onTap);
                 $touchB
                     .simulate('mousedown')
@@ -394,10 +394,22 @@
                 expect(taps).to.be(3);
             });
 
+            it('will only trigger single tap event and not delegate tap events', function() {
+                $body.on('tap', touchB, _onTap);
+                $touchA
+                    .on('tap', touchB, _onTap)
+                    .on('tap', _onTap);
+                $touchA
+                    .simulate('mousedown')
+                    .simulate('click');
+
+                expect(taps).to.be(1);
+            });
+
             it('will not trigger if mouse moves more than 10px', function() {
                 $body.on('tap', touchB, _onTap);
                 $touchA
-                    .on('tap', $touchB, _onTap)
+                    .on('tap', touchB, _onTap)
                     .on('tap', _onTap);
                 $touchB
                     .simulate('mousedown')
