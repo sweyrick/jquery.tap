@@ -47,14 +47,7 @@
      * @type {Array}
      * @constant
      */
-    var EVENT_VARIABLES = [
-        'clientX',
-        'clientY',
-        'screenX',
-        'screenY',
-        'pageX',
-        'pageY'
-    ];
+    var EVENT_VARIABLES = 'clientX clientY screenX screenY pageX pageY'.split(' ');
 
     /**
      * @type {Mouse}
@@ -114,9 +107,9 @@
              * Helper events namespace
              *
              * @name Mouse#namespace
-             * @type {Number}
+             * @type {String}
              */
-            this.namespace = HELPER_NAMESPACE + (ID++);
+            this.namespace = HELPER_NAMESPACE + ID++;
 
             /**
              * X position of touch on touchstart
@@ -191,7 +184,7 @@
         };
 
         /**
-         * Start listening for touchstart
+         * Start listening for mousedown
          *
          * @return {Mouse}
          */
@@ -201,7 +194,7 @@
         };
 
         /**
-         * Stop listening for touchstart
+         * Stop listening for mousedown
          *
          * @return {Mouse}
          */
@@ -246,6 +239,7 @@
 
         /**
          * Log start position and time
+         * Add event listeners
          *
          * @param {jQuery.Event} e
          * @private
@@ -326,7 +320,7 @@
         /**
          * Create tap event with data from touchEnd event
          *
-         * @param {Event} e
+         * @param {jQuery.Event} e
          * @param {Object} data
          * @return {jQuery.Event}
          * @private
@@ -368,6 +362,11 @@
 
         var base = Mouse.prototype;
 
+        /**
+         * @param {jQuery} $target
+         * @param {Object} handleObj
+         * @return {Tap}
+         */
         proto.init = function($target, handleObj) {
 
             /**
