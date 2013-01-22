@@ -4,8 +4,9 @@
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
     <meta name="description" content="jQuery.tap : A jQuery plugin that creates a click alternative for touch enabled browsers" />
-    <title>jQuery.tap</title>
+    <title>jQuery.tap | jQuery Plugin</title>
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <script src="js/main.js"></script>
     <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
 </head>
 <body>
@@ -15,12 +16,12 @@
         <header class="inner">
           <a id="forkme_banner" target="_blank" href="https://github.com/aarongloege/jquery.tap">View on GitHub</a>
 
-          <h1 id="project_title">jQuery.tap</h1>
+          <h1 id="project_title">jQuery.tap <span class="version">:)</span></h1>
           <h2 id="project_tagline">A jQuery plugin that creates a click alternative for touch enabled browsers</h2>
 
             <section id="downloads">
-              <a class="zip_download_link" target="_blank" data-type="download" href="https://github.com/aarongloege/jquery.tap/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" target="_blank" data-type="download" href="https://github.com/aarongloege/jquery.tap/tarball/master">Download this project as a tar.gz file</a>
+                <a class="zip_download_link" target="_blank" data-type="download" href="https://github.com/aarongloege/jquery.tap/zipball/master">Download this project as a .zip file</a>
+                <a class="tar_download_link" target="_blank" data-type="download" href="https://github.com/aarongloege/jquery.tap/tarball/master">Download this project as a tar.gz file</a>
             </section>
         </header>
     </div>
@@ -71,6 +72,10 @@
     </div>
     <script type="text/javascript">
         (function(window, $) {
+            $('.version').text(APP.getVersion());
+            $('.zip_download_link').attr('href', APP.getDownload());
+            $('.tar_download_link').attr('href', APP.getDownload('tar'));
+
             window._gaq = window._gaq || [];
             _gaq.push(['_setAccount', 'UA-37736770-1']);
             _gaq.push(['_trackPageview']);
@@ -82,7 +87,7 @@
             })();
 
             $(document).ready(function() {
-                $('a').on('click', function() {
+                $(document.body).on('click', 'a', function() {
                     var type = $(this).data('type') || 'link';
                     _gaq.push(['_trackEvent', type, this.href]);
                 })
