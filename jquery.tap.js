@@ -10,14 +10,6 @@
     $.support.touch = (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
 
     /**
-     * Max duration between touchstart and touchend
-     *
-     * @type {Number}
-     * @constant
-     */
-    var MAX_DURATION = 300;
-
-    /**
      * Max touch move
      *
      * @type {Number}
@@ -50,6 +42,14 @@
     var ID = 0;
 
     /**
+     * jQuery document object
+     *
+     * @type {jQuery}
+     * @static
+     */
+    var $DOCUMENT = $(document);
+
+    /**
      * Event variables to copy to touches
      *
      * @type {Array}
@@ -65,223 +65,368 @@
     ];
 
     /**
-     * Create tap event with data from touchEnd event
-     *
-     * @param {Event} e
-     * @param {Object} data
-     * @return {jQuery.Event}
-     * @private
+     * @type {Mouse}
      */
-    var _createTapEvent = function(e, data) {
-        var i = 0;
-        var length = EVENT_VARIABLES.length;
-        var touch = e.originalEvent.changedTouches[0];
-
-        var event = $.Event(EVENT_NAME, e);
-        event.type = EVENT_NAME;
-        event.data = data;
-
-        for (; i < length; i++) {
-            event[EVENT_VARIABLES[i]] = touch[EVENT_VARIABLES[i]];
-        }
-
-        return event;
-    };
-
-    /**
-     * Tap Class that will use touch/click events to trigger a tap event
-     * @class
-     * @name Tap
-     *
-     * @param {jQuery} $target
-     * @param {Object} handleObj
-     * @constructor
-     */
-    function Tap($target, handleObj) {
+    var Mouse = (function() {
 
         /**
-         * Target element
+         * Mouse tap event
          *
-         * @name Tap#$target
-         * @type {jQuery}
+         * @name Mouse
+         * @class
+         * @constructor
+         *
+         * @param {jQuery} $target
+         * @param {Object} handleObj
          */
-        this.$target = $target;
+        var Mouse = function($target, handleObj) {
+            if ($target !== undefined) {
+                this.init($target, handleObj);
+            }
+        };
+
+        var proto = Mouse.prototype;
 
         /**
-         * Event selector
-         *
-         * @name Tap#selector
-         * @type {String}
+         * @param {jQuery} $target
+         * @param {Object} handleObj
+         * @return {Mouse}
          */
-        this.selector = handleObj.selector;
+        proto.init = function($target, handleObj) {
 
-        /**
-         * Data to pass to event trigger
-         *
-         * @name Tap#data
-         * @type {Object}
-         */
-        this.data = handleObj.data;
+            /**
+             * Target element
+             *
+             * @name Mouse#$target
+             * @type {jQuery}
+             */
+            this.$target = $target;
 
-        /**
-         * Has touch moved past threshold?
-         *
-         * @name Tap#moved
-         * @type {Boolean}
-         */
-        this.moved = false;
+            /**
+             * Event selector
+             *
+             * @name Mouse#selector
+             * @type {String}
+             */
+            this.selector = handleObj.selector;
 
-        /**
-         * Helper events namespace
-         *
-         * @name Tap#namespace
-         * @type {Number}
-         */
-        this.namespace = HELPER_NAMESPACE + (ID++);
+            /**
+             * Data to pass to event trigger
+             *
+             * @name Mouse#data
+             * @type {Object}
+             */
+            this.data = handleObj.data;
 
-        /**
-         * X position of touch on touchstart
-         *
-         * @name Tap#startX
-         * @type {Number}
-         */
-        this.startX = 0;
+            /**
+             * Helper events namespace
+             *
+             * @name Mouse#namespace
+             * @type {Number}
+             */
+            this.namespace = HELPER_NAMESPACE + (ID++);
 
-        /**
-         * Y position of touch on touchstart
-         *
-         * @name Tap#startY
-         * @type {Number}
-         */
-        this.startY = 0;
+            /**
+             * X position of touch on touchstart
+             *
+             * @name Mouse#startX
+             * @type {Number}
+             */
+            this.startX = 0;
 
-        /**
-         * time of touch on touchstart
-         *
-         * @name Tap#startTime
-         * @type {Number}
-         */
-        this.startTime = 0;
+            /**
+             * Y position of touch on touchstart
+             *
+             * @name Mouse#startY
+             * @type {Number}
+             */
+            this.startY = 0;
 
-        /**
-         * Number of touches
-         *
-         * @name Tap#touchStartCount
-         * @type {Number}
-         */
-        this.touchStartCount = 0;
+            /**
+             * Flag to determine if touch is being tracked
+             *
+             * @name Mouse#isTracking
+             * @type {Boolean}
+             */
+            this.isTracking = false;
 
-        this
-            .setupHandlers()
-            .reset()
-            .enable();
-    }
-
-    Tap.prototype = {
+            return this
+                .setupHandlers()
+                .reset()
+                .enable();
+        };
 
         /**
          * Setup event handlers
          *
-         * @return {Tap}
+         * @return {Mouse}
          */
-        setupHandlers: function() {
+        proto.setupHandlers = function() {
 
             /**
-             * _onTouchStart handler
+             * onDown handler
              *
-             * @name Tap#onTouchStart
+             * @name Mouse#onDown
              * @type {Function}
              */
-            this.onTouchStart = $.proxy(this._onTouchStart, this);
+            this.onDown = $.proxy(this._onDown, this);
 
             /**
-             * _onTouchMove handler
+             * onMove handler
              *
-             * @name Tap#onTouchMove
+             * @name Mouse#onMove
              * @type {Function}
              */
-            this.onTouchMove = $.proxy(this._onTouchMove, this);
+            this.onMove = $.proxy(this._onMove, this);
 
             /**
-             * _onTouchEnd handler
+             * onUp handler
              *
-             * @name Tap#onTouchEnd
+             * @name Mouse#onUp
              * @type {Function}
              */
-            this.onTouchEnd = $.proxy(this._onTouchEnd, this);
+            this.onUp = $.proxy(this._onUp, this);
 
             /**
-             * _onTouchCancel handler
+             * onCancel handler
              *
-             * @name Tap#onTouchCancel
+             * @name Mouse#onCancel
              * @type {Function}
              */
-            this.onTouchCancel = $.proxy(this._onTouchCancel, this);
-
-            /**
-             * _onClick handler
-             *
-             * @name Tap#onClick
-             * @type {Function}
-             */
-            this.onClick = $.proxy(this._onClick, this);
+            this.onCancel = $.proxy(this._onCancel, this);
 
             return this;
-        },
+        };
+
+        /**
+         * Start listening for touchstart
+         *
+         * @return {Mouse}
+         */
+        proto.enable = function() {
+            this.$target.on('mousedown' + this.namespace, this.selector, this.onDown);
+            return this;
+        };
+
+        /**
+         * Stop listening for touchstart
+         *
+         * @return {Mouse}
+         */
+        proto.disable = function() {
+            this.$target.off('mousedown' + this.namespace, this.selector, this.onDown);
+            return this;
+        };
+
+        /**
+         * Reset values
+         *
+         * @return {Mouse}
+         */
+        proto.reset = function() {
+            //reset state
+            this.startX = 0;
+            this.startY = 0;
+            this.isTracking = false;
+
+            return this;
+        };
+
+        /**
+         * Destroy Tap object
+         *
+         * @return {Mouse}
+         */
+        proto.destroy = function() {
+            this.onCancel();
+            return this.disable();
+        };
+
+        /**
+         * Get X and Y coordinates
+         *
+         * @param {jQuery.Event} e
+         * @return {Array}
+         */
+        proto.getCoordinates = function(e) {
+            return [e.clientX, e.clientY];
+        };
+
+        /**
+         * Log start position and time
+         *
+         * @param {jQuery.Event} e
+         * @private
+         */
+        proto._onDown = function(e) {
+            // do not bind event listeners again if already bound
+            if (this.isTracking) {
+                return;
+            }
+
+            this.isTracking = true;
+
+            var coords = this.getCoordinates(e);
+
+            this.startX = coords[0];
+            this.startY = coords[1];
+
+            $DOCUMENT
+                .on('mousemove' + this.namespace, this.onMove)
+                .on('mouseup' + this.namespace, this.selector, this.onUp);
+        };
+
+        /**
+         * Determine if mouse has moved too much
+         *
+         * @param {jQuery.Event} e
+         * @private
+         */
+        proto._onMove = function(e) {
+            var coords = this.getCoordinates(e);
+
+            if (Math.abs(coords[0] - this.startX) > MAX_MOVE || Math.abs(coords[1] - this.startY) > MAX_MOVE) {
+                this.onCancel();
+            }
+        };
+
+        /**
+         * If this is not a manual jQuery.trigger, then trigger the tap event for desktop clicks
+         *
+         * @param {jQuery.Event} e
+         * @private
+         */
+        proto._onUp = function(e) {
+            if (!e.isTrigger && !e.originalEvent.triggeredTap) {
+                // Make sure any parents also emulating a tap event do not also fire tap.
+                // Triggering the tap event below will bubble the event anyway.
+                e.originalEvent.triggeredTap = true;
+                e.type = 'tap';
+                this.$target.trigger(e);
+            }
+
+            this.onCancel();
+        };
+
+        /**
+         * Remove all events and reset parameters
+         *
+         * @param {jQuery.Event} e
+         * @private
+         */
+        proto._onCancel = function (e) {
+            this.reset();
+            $DOCUMENT
+                .off('mousemove' + this.namespace, this.onMove)
+                .off('mouseup' + this.namespace, this.selector, this.onUp);
+        };
+
+        return Mouse;
+
+    }());
+
+    /**
+     * @type {Tap}
+     */
+    var Tap = (function(Mouse) {
+
+        /**
+         * Create tap event with data from touchEnd event
+         *
+         * @param {Event} e
+         * @param {Object} data
+         * @return {jQuery.Event}
+         * @private
+         */
+        var _createTapEvent = function(e, data) {
+            var i = 0;
+            var length = EVENT_VARIABLES.length;
+            var touch = e.originalEvent.changedTouches[0];
+
+            var event = $.Event(EVENT_NAME, e);
+            event.type = EVENT_NAME;
+            event.data = data;
+
+            for (; i < length; i++) {
+                event[EVENT_VARIABLES[i]] = touch[EVENT_VARIABLES[i]];
+            }
+
+            return event;
+        };
+
+        /**
+         * Tap Class that will use touch/click events to trigger a tap event
+         *
+         * @class
+         * @name Tap
+         * @constructor
+         *
+         * @param {jQuery} $target
+         * @param {Object} handleObj
+         */
+        var Tap = function($target, handleObj) {
+            if ($target !== undefined) {
+                this.init($target, handleObj);
+            }
+        };
+
+        var proto = Tap.prototype = new Mouse();
+        proto.constructor = Tap;
+
+        var base = Mouse.prototype;
+
+        proto.init = function($target, handleObj) {
+
+            /**
+             * Number of touches
+             *
+             * @name Tap#touchStartCount
+             * @type {Number}
+             */
+            this.touchStartCount = 0;
+
+            return base.init.call(this, $target, handleObj);
+        };
 
         /**
          * Start listening for touchstart
          *
          * @return {Tap}
          */
-        enable: function() {
-            if ($.support.touch) {
-                this.$target.on('touchstart' + this.namespace, this.selector, this.onTouchStart);
-            } else {
-                this.$target.on('click' + this.namespace, this.selector, this.onClick);
-            }
+        proto.enable = function() {
+            this.$target.on('touchstart' + this.namespace, this.selector, this.onDown);
             return this;
-        },
+        };
 
         /**
          * Stop listening for touchstart
          *
          * @return {Tap}
          */
-        disable: function() {
-            if ($.support.touch) {
-                this.$target.off('touchstart' + this.namespace, this.selector, this.onTouchStart);
-            } else {
-                this.$target.off('click' + this.namespace, this.selector, this.onClick);
-            }
+        proto.disable = function() {
+            this.$target.off('touchstart' + this.namespace, this.selector, this.onDown);
             return this;
-        },
+        };
 
         /**
          * Reset values
          *
          * @return {Tap}
          */
-        reset: function() {
-            //reset state
-            this.moved = false;
-            this.startX = 0;
-            this.startY = 0;
-            this.startTime = 0;
+        proto.reset = function() {
             this.touchStartCount = 0;
-
-            return this;
-        },
+            return base.reset.call(this);
+        };
 
         /**
-         * Destroy Tap object
+         * Get X and Y coordinates
          *
-         * @return {Tap}
+         * @param {jQuery.Event} e
+         * @return {Array}
          */
-        destroy: function() {
-            this.onTouchCancel();
-            return this.disable();
-        },
+        proto.getCoordinates = function(e) {
+            return [e.originalEvent.touches[0].clientX, e.originalEvent.touches[0].clientY];
+        };
 
         /**
          * Save touch position and start listening to touchmove and touchend
@@ -289,39 +434,24 @@
          * @param {jQuery.Event} e
          * @private
          */
-        _onTouchStart: function (e) {
+        proto._onDown = function (e) {
             this.touchStartCount = e.originalEvent.touches.length;
 
-            if (this.touchStartCount > 1) {
+            // do not bind event listeners again if already bound
+            if (this.isTracking) {
                 return;
             }
 
-            this.moved = false;
+            this.isTracking = true;
+
             this.startX = e.originalEvent.touches[0].clientX;
             this.startY = e.originalEvent.touches[0].clientY;
-            this.startTime = Date.now();
 
             this.$target
-                .on('touchmove' + this.namespace, this.selector, this.onTouchMove)
-                .on('touchend' + this.namespace, this.selector, this.onTouchEnd)
-                .on('touchcancel' + this.namespace, this.selector, this.onTouchCancel);
-        },
-
-        /**
-         * Determine if touch has moved too far to be considered a tap
-         *
-         * @param {jQuery.Event} e
-         * @private
-         */
-        _onTouchMove: function (e) {
-            var x = e.originalEvent.touches[0].clientX;
-            var y = e.originalEvent.touches[0].clientY;
-
-            //if finger moves more than MAX_MOVE, flag to cancel
-            if (Math.abs(x - this.startX) > MAX_MOVE || Math.abs(y - this.startY) > MAX_MOVE) {
-                this.moved = true;
-            }
-        },
+                .on('touchmove' + this.namespace, this.selector, this.onMove)
+                .on('touchend' + this.namespace, this.selector, this.onUp)
+                .on('touchcancel' + this.namespace, this.selector, this.onCancel);
+        };
 
         /**
          * Determine if a valid tap event and trigger tap
@@ -329,7 +459,7 @@
          * @param {jQuery.Event} e
          * @private
          */
-        _onTouchEnd: function (e) {
+        proto._onUp = function (e) {
             if (
                 !this.touchStartCount ||
                 e.originalEvent.touches.length > 0 ||
@@ -338,45 +468,33 @@
                 return;
             }
 
-            if (!e.originalEvent.triggeredTap && !this.moved && Date.now() - this.startTime < MAX_DURATION) {
+            if (!e.originalEvent.triggeredTap) {
                 // Make sure any parents also emulating a tap event do not also fire tap.
                 // Triggering the tap event below will bubble the event anyway.
                 e.originalEvent.triggeredTap = true;
                 this.$target.trigger(_createTapEvent(e, this.data));
             }
 
-            this.onTouchCancel();
-        },
+            this.onCancel();
+        };
 
         /**
-         * Remove touchmove, touchend, and touchcancel events
+         * Remove all events and reset parameters
          *
+         * @param {jQuery.Event} e
          * @private
          */
-        _onTouchCancel: function () {
-            this
-                .reset()
-                .$target
-                .off('touchmove' + this.namespace, this.selector, this.onTouchMove)
-                .off('touchend' + this.namespace, this.selector, this.onTouchEnd)
-                .off('touchcancel' + this.namespace, this.selector, this.onTouchCancel);
-        },
+        proto._onCancel = function (e) {
+            this.reset();
+            this.$target
+                .off('touchmove' + this.namespace, this.selector, this.onMove)
+                .off('touchend' + this.namespace, this.selector, this.onUp)
+                .off('touchcancel' + this.namespace, this.selector, this.onCancel);
+        };
 
-        /**
-         * If this is not a manual jQuery.trigger, then trigger the tap event for desktop clicks
-         *
-         * @private
-         */
-        _onClick: function(e) {
-            if (!e.isTrigger && !e.originalEvent.triggeredTap) {
-                // Make sure any parents also emulating a tap event do not also fire tap.
-                // Triggering the tap event below will bubble the event anyway.
-                e.originalEvent.triggeredTap = true;
-                e.type = 'tap';
-                this.$target.trigger(e);
-            }
-        }
-    };
+        return Tap;
+
+    }(Mouse));
 
     /**
      * Create new special tap event
@@ -391,7 +509,8 @@
          * @param {Object} handleObj
          */
         add: function(handleObj) {
-            handleObj.tap = new Tap($(this), handleObj);
+            var type = $.support.touch ? Tap : Mouse;
+            handleObj.tap = new type($(this), handleObj);
         },
 
         /**
