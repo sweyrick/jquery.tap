@@ -36,24 +36,22 @@
         <p>What is nice about this plugin, and what makes it different from other plugins, is that it takes advantage of jQuery's special event API, so you can use <code>jQuery.on</code> to bind events.</p>
         <div class="highlight">
             <pre><span class="c1">// jQuery.on method</span>
-        <span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap'</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span>
-        <span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap'</span><span class="p">,</span> <span class="nx">dataObject</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span>
-            </pre>
+<span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap'</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span>
+<span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap'</span><span class="p">,</span> <span class="nx">dataObject</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span></pre>
         </div>
         <p>And, because the event is bound through jQuery's <code>on</code> API, you can take advantage of namespaces and delegate events:</p>
         <div class="highlight">
             <pre><span class="c1">// Namespace</span>
-        <span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap.widget'</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span>
-        <span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap.widget'</span><span class="p">,</span> <span class="nx">dataObject</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span>
+<span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap.widget'</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span>
+<span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap.widget'</span><span class="p">,</span> <span class="nx">dataObject</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span>
 
-        <span class="c1">// Delegate</span>
-        <span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap'</span><span class="p">,</span> <span class="s1">'.child-element'</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span>
-        <span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap'</span><span class="p">,</span> <span class="s1">'.child-element'</span><span class="p">,</span> <span class="nx">dataObject</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span>
+<span class="c1">// Delegate</span>
+<span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap'</span><span class="p">,</span> <span class="s1">'.child-element'</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span>
+<span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap'</span><span class="p">,</span> <span class="s1">'.child-element'</span><span class="p">,</span> <span class="nx">dataObject</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span>
 
-        <span class="c1">// Together now</span>
-        <span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap.widget'</span><span class="p">,</span> <span class="s1">'.child-element'</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span>
-        <span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap.widget'</span><span class="p">,</span> <span class="s1">'.child-element'</span><span class="p">,</span> <span class="nx">dataObject</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span>
-            </pre>
+<span class="c1">// Together now</span>
+<span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap.widget'</span><span class="p">,</span> <span class="s1">'.child-element'</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span>
+<span class="nx">$</span><span class="p">(</span><span class="s1">'.element'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'tap.widget'</span><span class="p">,</span> <span class="s1">'.child-element'</span><span class="p">,</span> <span class="nx">dataObject</span><span class="p">,</span> <span class="nx">onTapHandler</span><span class="p">);</span></pre>
         </div>
         <p>The tap event will also bubble.</p>
         <h2>What About Desktop?</h2>
