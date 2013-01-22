@@ -42,14 +42,6 @@
     var ID = 0;
 
     /**
-     * jQuery document object
-     *
-     * @type {jQuery}
-     * @static
-     */
-    var $DOCUMENT = $(document);
-
-    /**
      * Event variables to copy to touches
      *
      * @type {Array}
@@ -271,9 +263,9 @@
             this.startX = coords[0];
             this.startY = coords[1];
 
-            $DOCUMENT
+            this.$target
                 .on('mousemove' + this.namespace, this.onMove)
-                .on('mouseup' + this.namespace, this.selector, this.onUp);
+                .on('click' + this.namespace, this.selector, this.onUp);
         };
 
         /**
@@ -316,9 +308,9 @@
          */
         proto._onCancel = function (e) {
             this.reset();
-            $DOCUMENT
+            this.$target
                 .off('mousemove' + this.namespace, this.onMove)
-                .off('mouseup' + this.namespace, this.selector, this.onUp);
+                .off('click' + this.namespace, this.selector, this.onUp);
         };
 
         return Mouse;
