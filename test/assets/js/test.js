@@ -336,7 +336,7 @@
                 $touchA
                     .on('tap', _onTap)
                     .simulate('mousedown')
-                    .simulate('mouseup');
+                    .simulate('click');
 
                 expect(taps).to.be(1);
             });
@@ -345,7 +345,7 @@
                 $body.on('tap', _onTap);
                 $touchA
                     .simulate('mousedown')
-                    .simulate('mouseup');
+                    .simulate('click');
 
                 expect(taps).to.be(1);
             });
@@ -355,7 +355,7 @@
                 $touchA.on('tap', _onTap);
                 $touchB
                     .simulate('mousedown')
-                    .simulate('mouseup');
+                    .simulate('click');
 
                 expect(taps).to.be(2);
             });
@@ -368,7 +368,7 @@
                 $body.on('tap', touchA, _onTap);
                 $touchA
                     .simulate('mousedown')
-                    .simulate('mouseup');
+                    .simulate('click');
 
                 expect(taps).to.be(1);
             });
@@ -377,27 +377,35 @@
                 $body.on('tap', touchA, _onTap);
                 $touchB
                     .simulate('mousedown')
-                    .simulate('mouseup');
+                    .simulate('click');
 
                 expect(taps).to.be(1);
             });
 
-//            it('will bubble tap event after click event', function() {
-//                $body.on('tap', touchB, function() {
-//                    console.log('tester');
-//                });
-//                $touchA
-//                    .on('tap', function() {
-//                    console.log('test');
-//                }).on('tap', function() {
-//                    console.log('mouseup');
-//                });
-//                $touchB
-//                    .simulate('mousedown')
-//                    .simulate('mouseup');
-//
-//                expect(taps).to.be(2);
-//            });
+            it('will bubble tap event after click event', function() {
+                $body.on('tap', touchB, _onTap);
+                $touchA
+                    .on('tap', $touchB, _onTap)
+                    .on('tap', _onTap);
+                $touchB
+                    .simulate('mousedown')
+                    .simulate('click');
+
+                expect(taps).to.be(3);
+            });
+
+            it('will not trigger if mouse moves more than 10px', function() {
+                $body.on('tap', touchB, _onTap);
+                $touchA
+                    .on('tap', $touchB, _onTap)
+                    .on('tap', _onTap);
+                $touchB
+                    .simulate('mousedown')
+                    .simulate('mousemove', { clientX: 50 })
+                    .simulate('click');
+
+                expect(taps).to.be(0);
+            });
 
         });
     });
