@@ -294,6 +294,7 @@
                 // Triggering the tap event below will bubble the event anyway.
                 e.originalEvent.triggeredTap = true;
                 e.type = 'tap';
+                e.data = this.data;
                 this.$target.trigger(e);
             }
 
