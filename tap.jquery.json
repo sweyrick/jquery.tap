@@ -1,7 +1,7 @@
 {
     "name": "tap",
     "title": "jQuery Tap",
-    "version": "0.9.4",
+    "version": "0.9.5",
     "author": {
         "name": "Aaron Gloege",
         "email": "aaron.gloege@gmail.com",
@@ -14,8 +14,8 @@
     "dependencies": {
         "jquery": ">=1.8.x"
     },
-    "description": "A jQuery plugin that creates a click alternative for touch enabled browsers. Click events on touch devices do not work the best. There is a 300ms delay from when you release your finger to the time the click event is triggered. This behavior is not desired. What is nice about this plugin, and what makes it different from other plugins, is that it takes advantage of jQuery's special event API, so you can use jQuery.on to bind events. And, because the event is bound through jQuery's on API, you can take advantage of namespaces and delegate events.",
-    "keywords": ["event", "mobile", "ios", "touch"],
+    "description": "A jQuery plugin that creates a click alternative for touch enabled browsers.\n\n Click events on touch devices do not work the best. There is a 300ms delay from when you release your finger to the time the click event is triggered. This behavior is not desired.\n\n What is nice about this plugin, and what makes it different from other plugins, is that it takes advantage of jQuery's special event API, so you can use jQuery.on to bind events. And, because the event is bound through jQuery's on API, you can take advantage of namespaces and delegate events.",
+    "keywords": ["event", "touch", "input"],
     "homepage": "http://aarongloege.github.com/jquery.tap/",
     "bugs": "https://github.com/aarongloege/jquery.tap/issues",
     "demo": "http://aarongloege.github.com/jquery.tap/example/"
