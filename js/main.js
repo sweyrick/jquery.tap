@@ -7,7 +7,7 @@
      * @type {String}
      * @constant
      */
-    var VERSION_ID = "0.9.4";
+    var VERSION_ID = "0.9.5";
 
     /**
      * URLs
