@@ -10,6 +10,14 @@
     var VERSION_ID = "0.9.6";
 
     /**
+     * User local copy of tap?
+     *
+     * @type {boolean}
+     * @constant
+     */
+    var LOCAL = true;
+
+    /**
      * URLs
      *
      * @type {Object}
@@ -19,7 +27,8 @@
             ZIP: 'https://github.com/aarongloege/jquery.tap/archive/' + VERSION_ID + '.zip',
             TAR: 'https://github.com/aarongloege/jquery.tap/archive/' + VERSION_ID + '.tar.gz'
         },
-        SCRIPT: 'https://raw.github.com/aarongloege/jquery.tap/' + VERSION_ID + '/jquery.tap.js'
+        SCRIPT: 'https://raw.github.com/aarongloege/jquery.tap/' + VERSION_ID + '/jquery.tap.js',
+        LOCAL: '../jquery.tap.js'
     };
 
     window.APP = {
@@ -44,7 +53,7 @@
          * @return {String}
          */
         getScript: function() {
-            return URL.SCRIPT;
+            return LOCAL ? URL.LOCAL : URL.SCRIPT;
         },
 
         /**
