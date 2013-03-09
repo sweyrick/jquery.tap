@@ -7,7 +7,7 @@
      * @type {String}
      * @constant
      */
-    var VERSION_ID = "0.9.6";
+    var VERSION_ID = "1.0";
 
     /**
      * User local copy of tap?
