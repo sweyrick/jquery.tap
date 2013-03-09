@@ -157,12 +157,11 @@
 
             describe('Direct Callback Bindings', function() {
 
-                it('will trigger tap event after touchstart, touchmove, and touchend are triggered', function() {
+                it('will trigger tap event after touchstart, and touchend are triggered', function() {
                     this.touch = $.support.touch = true;
                     $touchA
                         .on('tap', spy)
                         .simulate('touchstart')
-                        .simulate('touchmove')
                         .simulate('touchend');
 
                     expect(spy.callCount).to.be(1);
@@ -178,16 +177,19 @@
                     expect(spy.callCount).to.be(0);
                 });
 
-                it('will trigger if 300ms elapse between touchstart and touchmove', function(done) {
+                it('will trigger if 300ms elapse between touchstart and touchend', function(done) {
                     $touchA
                         .on('tap', spy)
-                        .simulate('touchstart')
-                        .simulate('touchmove');
+                        .simulate('touchstart');
 
                     setTimeout(function() {
                         $touchA.simulate('touchend');
-                        expect(spy.callCount).to.be(1);
-                        done();
+                        try {
+                            expect(spy.callCount).to.be(1);
+                            done();
+                        } catch(e) {
+                            done(e);
+                        }
                     }, 300);
                 });
 
