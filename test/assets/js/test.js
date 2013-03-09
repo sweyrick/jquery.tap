@@ -17,9 +17,10 @@
     });
 
     afterEach(function() {
-        $body.off();
-        $touchA.off();
-        $touchB.off();
+        $body.off('tap');
+        $touchA.off('tap');
+        $touchB.off('tap');
+        $body.trigger('touchcancel');
         spy.reset();
     });
 
@@ -61,7 +62,6 @@
             });
 
             it('will not trigger tap event if click is manually triggered on same element', function() {
-                console.log('trigger click');
                 $touchA
                     .on('tap', spy)
                     .trigger('click');
@@ -70,7 +70,6 @@
             });
 
             it('will not trigger tap event if click is manually triggered on child element', function() {
-                console.log('trigger click');
                 $touchA.on('tap', spy);
                 $touchB.trigger('click');
 
@@ -78,7 +77,6 @@
             });
 
             it('will bubble tap event when triggered', function() {
-                console.log('test');
                 $body.on('tap', spy);
                 $touchA.on('tap', spy);
                 $touchB.trigger('tap');
@@ -167,14 +165,14 @@
                     expect(spy.callCount).to.be(1);
                 });
 
-                it('will not trigger if moved more than 10px between touchstart and touchmove', function() {
+                it('will trigger if moved 100px between touchstart and touchend', function() {
                     $touchA
                         .on('tap', spy)
                         .simulate('touchstart')
-                        .simulate('touchmove', { clientX: 20, clientY: 20 })
+                        .simulate('touchmove', { clientX: 100, clientY: 100 })
                         .simulate('touchend');
 
-                    expect(spy.callCount).to.be(0);
+                    expect(spy.callCount).to.be(1);
                 });
 
                 it('will trigger if 300ms elapse between touchstart and touchend', function(done) {
@@ -201,8 +199,12 @@
 
                     setTimeout(function() {
                         $touchA.simulate('touchend');
-                        expect(spy.callCount).to.be(1);
-                        done();
+                        try {
+                            expect(spy.callCount).to.be(1);
+                            done();
+                        } catch(e) {
+                            done(e);
+                        }
                     }, 1000);
                 });
 
@@ -264,14 +266,14 @@
                     expect(spy.callCount).to.be(1);
                 });
 
-                it('will not trigger if moved more than 10px between touchstart and touchmove', function() {
+                it('will trigger if moved more than 100px between touchstart and touchend', function() {
                     $body.on('tap', touchA, spy);
                     $touchA
                         .simulate('touchstart')
-                        .simulate('touchmove', { clientX: 20, clientY: 20 })
+                        .simulate('touchmove', { clientX: 100, clientY: 100 })
                         .simulate('touchend');
 
-                    expect(spy.callCount).to.be(0);
+                    expect(spy.callCount).to.be(1);
                 });
 
                 it('will trigger if 300ms elapse between touchstart and touchmove', function(done) {
@@ -282,8 +284,12 @@
 
                     setTimeout(function() {
                         $touchA.simulate('touchend');
-                        expect(spy.callCount).to.be(1);
-                        done();
+                        try {
+                            expect(spy.callCount).to.be(1);
+                            done();
+                        } catch(e) {
+                            done(e);
+                        }
                     }, 300);
                 });
 
@@ -295,8 +301,12 @@
 
                     setTimeout(function() {
                         $touchA.simulate('touchend');
-                        expect(spy.callCount).to.be(1);
-                        done();
+                        try {
+                            expect(spy.callCount).to.be(1);
+                            done();
+                        } catch(e) {
+                            done(e);
+                        }
                     }, 1000);
                 });
 

@@ -15,7 +15,7 @@
      * @type {boolean}
      * @constant
      */
-    var LOCAL = true;
+    var LOCAL = false;
 
     /**
      * URLs
