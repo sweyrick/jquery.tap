@@ -58,6 +58,22 @@
     var EVENT_NAME = 'tap';
 
     /**
+     * Max distance between touchstart and touchend to be considered a tap
+     *
+     * @type {number}
+     * @constant
+     */
+    var MAX_TAP_DELTA = 40;
+
+    /**
+     * Max duration between touchstart and touchend to be considered a tap
+     *
+     * @type {number}
+     * @constant
+     */
+    var MAX_TAP_TIME = 400;
+
+    /**
      * Event variables to copy to touches
      *
      * @type {Array}
@@ -106,7 +122,14 @@
          *
          * @type {boolean}
          */
-        cancel: false
+        cancel: false,
+
+        /**
+         * Start time
+         *
+         * @type {number}
+         */
+        start: 0
 
     };
 
@@ -134,6 +157,28 @@
         }
 
         return event;
+    };
+
+    /**
+     * Determine if a valid tap event
+     *
+     * @param {jQuery.Event} e
+     * @returns {boolean}
+     * @private
+     */
+    var _isTap = function(e) {
+        var touch = e.changedTouches[0];
+        var xDelta = Math.abs(touch.pageX - TOUCH_VALUES.x);
+        var yDelta = Math.abs(touch.pageY - TOUCH_VALUES.y);
+        var delta = Math.max(xDelta, yDelta);
+
+        return (
+            Date.now() - TOUCH_VALUES.start < MAX_TAP_TIME &&
+            delta < MAX_TAP_DELTA &&
+            !TOUCH_VALUES.cancel &&
+            TOUCH_VALUES.count === 1 &&
+            Tap.isTracking
+        );
     };
 
     /**
@@ -215,6 +260,7 @@
             var touch = touches[0];
 
             TOUCH_VALUES.cancel = false;
+            TOUCH_VALUES.start = Date.now();
             TOUCH_VALUES.$el = $(e.target);
             TOUCH_VALUES.x = touch.pageX;
             TOUCH_VALUES.y = touch.pageY;
@@ -227,11 +273,7 @@
          * @param {jQuery.Event} e
          */
         onTouchEnd: function(e) {
-            if (
-                !TOUCH_VALUES.cancel &&
-                TOUCH_VALUES.count === 1 &&
-                Tap.isTracking
-            ) {
+            if (_isTap(e)) {
                 TOUCH_VALUES.$el.trigger(_createEvent(EVENT_NAME, e));
             }
             // Cancel tap
